@@ -4,51 +4,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Signup</title>
-    <link rel="stylesheet" href="style_login.css">
+    <title>Community Donation Login</title>
+    <link rel="stylesheet" href="style1.css">
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        /* Simple enhancements for trust & community feel */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        p {
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+        }
+
+        .overlay-panel p {
+            font-size: 13px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container" id="container">
-        <!-- Sign Up Form -->
+        <!-- User Login -->
         <div class="form-container sign-up-container">
             <form>
-                <h1>Create Account</h1>
-                <input type="text" placeholder="Name" required />
-                <input type="email" placeholder="Email" required />
-                <input type="password" placeholder="Password" required />
-                <button>Sign Up</button>
+                <h1>Support Your Community</h1>
+                <p>Quickly log in with Google to make a micro-donation and track its impact</p>
+                <!-- Google Sign-In button -->
+                <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-callback="handleGoogleLogin">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                    data-text="sign_in_with" data-shape="rect" data-logo_alignment="left">
+                </div>
             </form>
         </div>
 
-        <!-- Sign In Form -->
+        <!-- Admin Login -->
         <div class="form-container sign-in-container">
             <form>
-                <h1>Sign in</h1>
-                <input type="email" placeholder="Email" required />
+                <h1>Admin Portal</h1>
+                <p>Authorized staff can log in to verify and manage donations</p>
+                <input type="email" placeholder="Admin Email" required />
                 <input type="password" placeholder="Password" required />
-                <button>Sign In</button>
+                <button>Login</button>
             </form>
         </div>
 
-        <!-- Overlay for Sliding Effect -->
+        <!-- Overlay -->
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
-                    <h1>Welcome Back!</h1>
-                    <p>To keep connected with us please login</p>
-                    <button class="ghost" id="signIn">Sign In</button>
+                    <h1>Admin Portal</h1>
+                    <p>Manage and verify donations to ensure transparency for the community.</p>
+                    <button class="ghost" id="signIn">Admin Login</button>
                 </div>
-                <div class="overlay-panel overlay-right ">
-                    <h1>Hello, Friend!</h1>
-                    <p>Enter your details and start your donation journey with us</p>
-                    <button class="ghost" id="signUp">Admin here!!</button>
+                <div class="overlay-panel overlay-right">
+                    <h1>User Portal</h1>
+                    <p>Support local projects and see how your contribution makes a real impact!</p>
+                    <button class="ghost" id="signUp">User Login</button>
                 </div>
+
+
             </div>
         </div>
     </div>
 
     <script src="script_login.js"></script>
+
+    <!-- Google Login callback -->
+    <script>
+        function handleGoogleLogin(response) {
+            console.log("Google Token: ", response.credential);
+            alert("Google Login successful! You can now support local community projects.");
+            // Redirect to a simulated user dashboard showing donation progress
+            window.location.href = "user-dashboard.html";
+        }
+    </script>
 </body>
 
 </html>
