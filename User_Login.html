@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Community Fund</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <h1>🌱 Community Fund</h1>
+        <p>Support local causes with small donations</p>
+    </header>
+
+    <main id="projects"></main>
+
+    <script>
+        // Dummy data
+        const projects = [
+            {
+                id: 1,
+                title: "School Garden",
+                description: "Help us plant 50 saplings in the community school garden.",
+                target: 1000,
+                raised: 250
+            },
+            {
+                id: 2,
+                title: "Neighborhood Cleanup",
+                description: "Support our campaign to clean and paint the local park.",
+                target: 2000,
+                raised: 750
+            }
+        ];
+
+        const container = document.getElementById("projects");
+
+        projects.forEach(p => {
+            container.innerHTML += `
+        <div class="card">
+          <h2>${p.title}</h2>
+          <p>${p.description}</p>
+          <progress value="${p.raised}" max="${p.target}"></progress>
+          <p>Raised ₹${p.raised} of ₹${p.target}</p>
+          <a href="project.html?id=${p.id}" class="btn">View Project</a>
+        </div>
+      `;
+        });
+    </script>
+</body>
+
+</html>
