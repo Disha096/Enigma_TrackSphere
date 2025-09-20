@@ -4,7 +4,106 @@
 <head>
     <meta charset="UTF-8">
     <title>Community Fund</title>
+
     <link rel="stylesheet" href="User_styles.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem;
+            background-color: #27ae60;
+            color: white;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #2ecc71;
+        }
+
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 25px;
+            overflow: hidden;
+            height: 25px;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            width: 0%;
+            text-align: right;
+            padding-right: 10px;
+            line-height: 25px;
+            color: white;
+            font-weight: bold;
+            border-radius: 25px;
+            transition: width 1s ease-in-out;
+        }
+
+        .donate-tag {
+            margin-top: 1.5rem;
+            background: #fdfdfd;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .donate-input {
+            width: 100px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .impact {
+            margin-top: 1rem;
+            font-style: italic;
+            color: #16a085;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -13,39 +112,92 @@
         <p>Support local causes with small donations</p>
     </header>
 
-    <main id="projects"></main>
+    <main id="project-container"></main>
 
     <script>
-        // Dummy data
         const projects = [
-            {
-                id: 1,
-                title: "School Garden",
-                description: "Help us plant 50 saplings in the community school garden.",
-                target: 1000,
-                raised: 250
-            },
-            {
-                id: 2,
-                title: "Neighborhood Cleanup",
-                description: "Support our campaign to clean and paint the local park.",
-                target: 2000,
-                raised: 750
-            }
+            { id: 1, title: "School Garden", description: "Plant 50 saplings at the community school.", target: 1000, raised: 250 },
+            { id: 2, title: "Neighborhood Cleanup", description: "Clean and repaint the local park.", target: 2000, raised: 750 },
+            { id: 3, title: "Library Upgrade", description: "Add new books and seating in library.", target: 1500, raised: 600 }
         ];
 
-        const container = document.getElementById("projects");
+        const container = document.getElementById("project-container");
 
-        projects.forEach(p => {
-            container.innerHTML += `
-        <div class="card">
-          <h2>${p.title}</h2>
-          <p>${p.description}</p>
-          <progress value="${p.raised}" max="${p.target}"></progress>
-          <p>Raised ₹${p.raised} of ₹${p.target}</p>
-          <a href="project.html?id=${p.id}" class="btn">View Project</a>
-        </div>
+        function updateProgress(id) {
+            const project = projects.find(p => p.id === id);
+            const progressBar = document.getElementById(`progress-bar-${id}`);
+            const impactText = document.getElementById(`impact-text-${id}`);
+            const percent = Math.min((project.raised / project.target) * 100, 100).toFixed(0);
+
+            progressBar.style.width = percent + "%";
+            progressBar.textContent = percent + "%";
+
+            if (percent >= 100) {
+                impactText.textContent = "🎉 Goal achieved! Thank you!";
+            } else if (percent >= 50) {
+                impactText.textContent = "💚 More than halfway there!";
+            } else {
+                impactText.textContent = "🌱 Every contribution counts!";
+            }
+        }
+
+        projects.forEach(project => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.innerHTML = `
+        <h2>${project.title}</h2>
+        <p>${project.description}</p>
+        <button class="btn" id="donate-open-${project.id}">Donate</button>
+        <div id="donate-area-${project.id}"></div>
       `;
+            container.appendChild(card);
+
+            // Open donation tag dynamically
+            document.getElementById(`donate-open-${project.id}`).addEventListener("click", () => {
+                const donateArea = document.getElementById(`donate-area-${project.id}`);
+
+                // If already created, just show
+                if (donateArea.innerHTML.trim() !== "") {
+                    donateArea.classList.toggle("hidden");
+                    return;
+                }
+
+                // Create donation tag dynamically
+                donateArea.innerHTML = `
+          <div class="donate-tag" id="donate-tag-${project.id}">
+            <div class="progress-container">
+              <div class="progress-bar" id="progress-bar-${project.id}">0%</div>
+            </div>
+            <div class="donate-section">
+              <input type="number" id="donation-${project.id}" class="donate-input" placeholder="₹">
+              <button class="btn" id="donate-btn-${project.id}">Confirm Donation</button>
+            </div>
+            <p class="impact" id="impact-text-${project.id}"></p>
+          </div>
+        `;
+
+                updateProgress(project.id);
+
+                // Confirm donation
+                document.getElementById(`donate-btn-${project.id}`).addEventListener("click", () => {
+                    if (project.raised >= project.target) {
+                        alert("This project is already complete 🎉");
+                        return;
+                    }
+
+                    const donationInput = document.getElementById(`donation-${project.id}`);
+                    const donationAmount = parseInt(donationInput.value) || 0;
+
+                    if (donationAmount > 0) {
+                        project.raised = Math.min(project.raised + donationAmount, project.target);
+                        updateProgress(project.id);
+                        donationInput.value = "";
+                        alert(`Thank you for donating ₹${donationAmount}!`);
+                    } else {
+                        alert("Please enter a valid donation amount.");
+                    }
+                });
+            });
         });
     </script>
 </body>
