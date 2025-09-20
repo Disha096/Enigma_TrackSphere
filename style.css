@@ -14,7 +14,7 @@ body {
 /* Sidebar */
 .sidebar {
   width: 220px;
-  background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+  background: linear-gradient(180deg, #1cc88a 0%, #17a673 100%); /* changed blue to green */
   color: white;
   padding: 20px;
 }
@@ -90,8 +90,8 @@ body {
 
 /* Card Color Variants */
 .card.blue {
-  border-left: 4px solid #4e73df;
-  color: #4e73df;
+  border-left: 4px solid #1cc88a; /* changed blue to green */
+  color: #1cc88a;
 }
 .card.green {
   border-left: 4px solid #1cc88a;
@@ -118,7 +118,7 @@ th, td {
   text-align: left;
 }
 th {
-  background: #4e73df;
+  background: #1cc88a; /* changed blue to green */
   color: white;
 }
 tr:hover { background: #f9f9f9; }
