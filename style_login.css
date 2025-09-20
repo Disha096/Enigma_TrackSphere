@@ -7,11 +7,13 @@
 }
 
 body {
-    background: linear-gradient(135deg, #4e73df, #1cc88a); /* updated gradient */
+    /* background: linear-gradient(135deg, #4e73df, #1cc88a); updated gradient */
+    background : #a0a0a242;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    
 }
 
 .container {
