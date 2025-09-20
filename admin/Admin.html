@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CommunityFund - Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>CommunityFund</h2>
+      <ul>
+        <li class="active">Dashboard</li>
+        <li>Projects</li>
+        <li>Donations</li>
+        <li>Users</li>
+        <li>Settings</li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <h1>Admin Dashboard</h1>
+        <div class="admin-profile">
+          <span>Admin</span>
+          <button>Logout</button>
+        </div>
+      </header>
+
+      <!-- Stats -->
+      <section class="stats">
+        <div class="card">
+          <h3>Total Projects</h3>
+          <p>12</p>
+        </div>
+        <div class="card">
+          <h3>Total Donations</h3>
+          <p>₹25,000</p>
+        </div>
+        <div class="card">
+          <h3>Active Users</h3>
+          <p>87</p>
+        </div>
+      </section>
+
+      <!-- Pending Projects -->
+      <section>
+        <h2>Pending Projects</h2>
+        <table>
+          <tr>
+            <th>Project</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          <tr>
+            <td>Food Drive</td>
+            <td>Community</td>
+            <td>Pending</td>
+            <td>
+              <button class="approve">Approve</button>
+              <button class="reject">Reject</button>
+            </td>
+          </tr>
+          <tr>
+            <td>Community Library</td>
+            <td>Education</td>
+            <td>Pending</td>
+            <td>
+              <button class="approve">Approve</button>
+              <button class="reject">Reject</button>
+            </td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- Donations -->
+      <section>
+        <h2>Recent Donations</h2>
+        <table>
+          <tr>
+            <th>User</th>
+            <th>Project</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+          <tr>
+            <td>test@demo</td>
+            <td>School Garden Revamp</td>
+            <td>₹500</td>
+            <td>20 Sept 2025</td>
+          </tr>
+          <tr>
+            <td>john@demo</td>
+            <td>Neighborhood Clean-Up</td>
+            <td>₹1000</td>
+            <td>19 Sept 2025</td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- Users -->
+      <section>
+        <h2>Users</h2>
+        <table>
+          <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <td>test@demo</td>
+            <td>User</td>
+            <td><button class="reject">Delete</button></td>
+          </tr>
+          <tr>
+            <td>john@demo</td>
+            <td>User</td>
+            <td><button class="reject">Delete</button></td>
+          </tr>
+        </table>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
