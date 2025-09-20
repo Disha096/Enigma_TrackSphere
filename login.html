@@ -27,11 +27,17 @@
         <div class="form-container sign-in-container">
             <form>
                 <h1>Sign in</h1>
-                <input type="email" placeholder="Email" required />
-                <input type="password" placeholder="Password" required />
-                <button type="submit">Sign In</button>
+                <input type="text" id="userNameInput" placeholder="Enter your name"
+                    style="margin-bottom: 15px; padding: 10px; width: 100%; box-sizing: border-box;">
 
-                <p style="margin: 15px 0;">OR</p>
+                <!-- <input type="password" placeholder="Password" required /> 
+                <button type="submit">Sign In</button>  -->
+
+                <!-- <p style="margin: 15px 0;">OR</p> -->
+
+                <p style="text-align: center; font-size: 16px; color: #555; margin: 20px 0;">
+                    Use Google to login
+                </p>
 
                 <!-- Google Sign-In button -->
                 <div id="g_id_onload"
@@ -72,6 +78,14 @@
             // Decode for frontend demo (DON'T trust on frontend, verify in backend)
             const data = parseJwt(response.credential);
             alert("Welcome " + data.name + " (" + data.email + ")");
+
+            sessionStorage.setItem("user", JSON.stringify({
+                name: data.name,
+                email: data.email
+
+            }));
+
+            window.location.href = "User_Login.html";
         }
 
         // Helper function to decode JWT (for demo only)
