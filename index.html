@@ -95,13 +95,46 @@
         <p>Email: <a href="mailto:admin@communityfund.com">admin@communityfund.com</a></p>
         <p>Phone: +91-9876543210</p>
         <p>If you want to start a project, reach out to our admin team here.</p>
-        <a href="login.html" class="btn btn-custom mt-3">Go to Login</a>
+
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="login.html" class="btn btn-custom">Go to Login</a>
+
+            <!-- Hidden File Input -->
+            <input type="file" id="fileInput" style="display:none" />
+
+            <!-- Upload Button -->
+            <button id="uploadBtn" class="btn btn-custom">Upload</button>
+        </div>
+
+        <p id="fileName" class="mt-2" style="font-weight:bold;"></p>
     </section>
 
     <footer class="text-center p-3 bg-light">
         <small>© 2025 Community Fund. Built with ❤️ by Students</small>
     </footer>
 
+    <script>
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileName');
+
+        // When the button is clicked, trigger the file input
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // When a file is selected, show its name
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileNameDisplay.textContent = `Uploaded: ${file.name}`;
+                alert(`✅ ${file.name} uploaded successfully!`);
+                // Here you can also add code to send the file to a server if needed
+            }
+        });
+    </script>
+
 </body>
 
 </html>
+
