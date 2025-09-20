@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Community Fund</title>
+    <title>User Dashboard | Community Fund</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,13 +19,35 @@
             color: white;
         }
 
-        main {
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+
+        nav button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1cc88a;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        nav button.active {
+            background-color: #17a673;
+        }
+
+        section {
             max-width: 800px;
             margin: 2rem auto;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            display: none;
+        }
+
+        section.active {
+            display: block;
         }
 
         .card {
@@ -33,6 +55,7 @@
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
         }
 
         h2 {
@@ -96,7 +119,6 @@
             display: none;
         }
 
-        /* Notification bar */
         #notification {
             position: fixed;
             top: -60px;
@@ -116,7 +138,6 @@
             top: 0;
         }
 
-        /* Modal overlay */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -130,7 +151,6 @@
             z-index: 2000;
         }
 
-        /* Modal box */
         .modal {
             background: #fff;
             padding: 2rem;
@@ -144,11 +164,6 @@
         .modal h3 {
             margin-top: 0;
             color: #2c3e50;
-        }
-
-        .modal p {
-            margin: 1rem 0;
-            color: #555;
         }
 
         .modal button {
@@ -186,11 +201,17 @@
 
 <body>
     <header>
-        <h1>🌱 Community Fund</h1>
-        <p>Support local causes with small donations</p>
+        <h1>🌱 Community Fund Dashboard</h1>
     </header>
 
-    <!-- Notification bar -->
+    <!-- Tabs -->
+    <nav>
+        <button class="tab-btn active" data-tab="view">View Projects</button>
+        <button class="tab-btn" data-tab="donate">Donate</button>
+        <button class="tab-btn" data-tab="status">Status Update</button>
+    </nav>
+
+    <!-- Notification -->
     <div id="notification"></div>
 
     <!-- Modal -->
@@ -203,22 +224,59 @@
         </div>
     </div>
 
-    <main id="project-container"></main>
+    <!-- Tabs Content -->
+    <section id="view" class="active">
+        <div class="card">
+            <h2>School Garden</h2>
+            <p>Plant 50 saplings at the community school.</p>
+        </div>
+        <div class="card">
+            <h2>Neighborhood Cleanup</h2>
+            <p>Clean and repaint the local park.</p>
+        </div>
+        <div class="card">
+            <h2>Library Upgrade</h2>
+            <p>Add new books and seating in library.</p>
+        </div>
+    </section>
+
+    <section id="donate">
+        <!-- Donate tab: Your full donation logic -->
+    </section>
+
+    <section id="status">
+        <p>Status updates will appear here.</p>
+    </section>
 
     <script>
+        // Tab functionality
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const sections = document.querySelectorAll("section");
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                tabButtons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+
+                sections.forEach(sec => sec.classList.remove("active"));
+                document.getElementById(btn.dataset.tab).classList.add("active");
+            });
+        });
+
+        // === DONATE TAB LOGIC START ===
+        const donateSection = document.getElementById("donate");
+
         const projects = [
             { id: 1, title: "School Garden", description: "Plant 50 saplings at the community school.", target: 1000, raised: 250 },
             { id: 2, title: "Neighborhood Cleanup", description: "Clean and repaint the local park.", target: 2000, raised: 750 },
             { id: 3, title: "Library Upgrade", description: "Add new books and seating in library.", target: 1500, raised: 600 }
         ];
 
-        const container = document.getElementById("project-container");
         const notification = document.getElementById("notification");
         const modalOverlay = document.getElementById("modal-overlay");
         const modalText = document.getElementById("modal-text");
         const modalButtons = document.getElementById("modal-buttons");
 
-        // Show notification
         function showNotification(message, color = "#27ae60") {
             notification.textContent = message;
             notification.style.background = color;
@@ -226,7 +284,6 @@
             setTimeout(() => notification.classList.remove("show"), 3000);
         }
 
-        // Open modal
         function openModal(leftover, fromProject) {
             modalText.textContent = `You still have ₹${leftover} left. Would you like to donate it to another project?`;
             modalButtons.innerHTML = "";
@@ -271,26 +328,26 @@
             }
         }
 
+        // Render donation cards in Donate tab
         projects.forEach(project => {
             const card = document.createElement("div");
             card.classList.add("card");
             card.innerHTML = `
-        <h2>${project.title}</h2>
-        <button class="btn" id="view-btn-${project.id}">View / Donate</button>
-        <div class="details hidden" id="details-${project.id}">
-          <p>${project.description}</p>
-          <div class="progress-container">
-            <div class="progress-bar" id="progress-bar-${project.id}">0%</div>
-          </div>
-          <div class="donate-section">
-            <input type="number" id="donation-${project.id}" class="donate-input" placeholder="₹">
-            <button class="btn" id="donate-btn-${project.id}">Donate</button>
-          </div>
-          <p class="impact" id="impact-text-${project.id}"></p>
-        </div>
-      `;
-            container.appendChild(card);
-
+            <h2>${project.title}</h2>
+            <button class="btn" id="view-btn-${project.id}">View / Donate</button>
+            <div class="details hidden" id="details-${project.id}">
+              <p>${project.description}</p>
+              <div class="progress-container">
+                <div class="progress-bar" id="progress-bar-${project.id}">0%</div>
+              </div>
+              <div class="donate-section">
+                <input type="number" id="donation-${project.id}" class="donate-input" placeholder="₹">
+                <button class="btn" id="donate-btn-${project.id}">Donate</button>
+              </div>
+              <p class="impact" id="impact-text-${project.id}"></p>
+            </div>
+          `;
+            donateSection.appendChild(card);
             updateProgress(project.id);
 
             document.getElementById(`view-btn-${project.id}`).addEventListener("click", () => {
@@ -322,7 +379,7 @@
 
                     } else {
                         project.raised += donationAmount;
-                        updateProgress(project.id)  ;
+                        updateProgress(project.id);
                         donationInput.value = "";
                         showNotification(`Thank you for donating ₹${donationAmount}!`);
                     }
@@ -331,6 +388,7 @@
                 }
             });
         });
+        // === DONATE TAB LOGIC END ===
     </script>
 </body>
 
