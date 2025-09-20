@@ -7,7 +7,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #4e73df, #1cc88a); /* updated gradient */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -84,14 +84,14 @@ form input {
 form button {
     border-radius: 20px;
     border: none;
-    background: #667eea;
+    background: linear-gradient(90deg, #4e73df, #1cc88a); /* soft blue → green */
     color: #fff;
     font-size: 14px;
     font-weight: bold;
     padding: 12px 45px;
     letter-spacing: 1px;
     text-transform: uppercase;
-    transition: transform 80ms ease-in;
+    transition: transform 80ms ease-in, opacity 0.3s;
     margin-top: 10px;
     cursor: pointer;
 }
@@ -109,7 +109,6 @@ button.ghost {
     height: 30px;
     width: fit-content;
     color: #fff;
-
 }
 
 .overlay-container {
@@ -128,14 +127,13 @@ button.ghost {
 .container.right-panel-active .overlay-container {
     transform: translateX(-100%);
     border-bottom-left-radius: 0;
-    /* remove left rounding */
     border-top-left-radius: 0;
     border-bottom-right-radius: 80px;
     border-top-right-radius: 80px;
 }
 
 .overlay {
-    background: linear-gradient(135deg, #764ba2, #667eea);
+    background: linear-gradient(135deg, #1cc88a, #4e73df); /* reversed gradient for overlay */
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
