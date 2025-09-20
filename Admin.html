@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -85,34 +86,12 @@
       padding-bottom: 0.5rem;
     }
 
-    .progress-container {
-      background: #e0e0e0;
-      border-radius: 25px;
-      overflow: hidden;
-      height: 28px;
-      margin: 0.5rem 0 1rem 0;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #27ae60, #2ecc71);
-      width: 0%;
-      text-align: right;
-      padding-right: 12px;
-      line-height: 28px;
-      color: white;
-      font-weight: bold;
-      border-radius: 25px;
-      transition: width 1s ease-in-out;
-    }
-
     form {
       margin-top: 1rem;
     }
 
     input,
-    textarea,
-    select {
+    textarea {
       width: 100%;
       padding: 12px;
       margin: 0.5rem 0 1rem 0;
@@ -138,45 +117,6 @@
       background-color: #2ecc71;
     }
 
-    .stats-box {
-      display: flex;
-      justify-content: space-around;
-      margin: 2rem 0;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .stat-card {
-      background: #ecf0f1;
-      padding: 1.5rem;
-      border-radius: 12px;
-      text-align: center;
-      flex: 1;
-      min-width: 150px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .stat-card h3 {
-      font-size: 2rem;
-      margin: 0;
-      color: #27ae60;
-    }
-
-    .welcome {
-      text-align: center;
-      padding: 3rem 1rem;
-      font-size: 1.2rem;
-      color: #34495e;
-      line-height: 1.8;
-    }
-
-    hr {
-      border: none;
-      border-top: 1px solid #ccc;
-      margin: 1rem 0;
-    }
-
-    /* Map styles */
     #projectMap {
       width: 100%;
       height: 400px;
@@ -188,12 +128,19 @@
       font-weight: bold;
     }
 
-    /* Floating button over map */
-    #useLocationBtn {
+    #suggestions {
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
       position: absolute;
-      top: 10px;
-      right: 10px;
+      background: white;
+      width: calc(100% - 2px);
       z-index: 1000;
+    }
+
+    #suggestions div:hover {
+      background-color: #f0f0f0;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -211,14 +158,14 @@
   <main>
     <!-- Welcome Page -->
     <section id="welcome" class="tab-content active">
-      <div class="welcome">
+      <div style="text-align:center; padding:3rem 1rem; font-size:1.2rem; color:#34495e; line-height:1.8;">
         <h2>Welcome, Admin 🎉</h2>
-        <p>Manage community initiatives efficiently. You can monitor project progress, add new campaigns, and oversee
+        <p>Manage community initiatives efficiently. Monitor project progress, add new campaigns, and oversee
           administrative access all in one place.</p>
       </div>
     </section>
 
-    <!-- Add Project with Leaflet Map and Current Location -->
+    <!-- Add Project -->
     <section id="add-project" class="tab-content">
       <h2>➕ Add New Project</h2>
       <form id="projectForm">
@@ -226,12 +173,13 @@
         <textarea id="description" placeholder="Detailed Project Description" rows="4" required></textarea>
         <input type="number" id="target" placeholder="Target Funding Amount (₹)" required>
 
-        <!-- Leaflet Map and Current Location -->
         <label>Project Location</label>
         <div style="position: relative;">
-          <button type="button" class="btn" id="useLocationBtn">📍 Use My Current Location</button>
-          <div id="projectMap"></div>
+          <input type="text" id="locationInput" placeholder="Enter project location (e.g., Panvel, Maharashtra)"
+            autocomplete="off" required>
+          <div id="suggestions"></div>
         </div>
+        <div id="projectMap"></div>
         <p>Selected Coordinates: <span id="selectedCoords">None</span></p>
 
         <button type="submit" class="btn">Add Project</button>
@@ -267,10 +215,7 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Projects array
-    let projects = [];
-
-    // Tabs
+    // Tab functionality
     const tabButtons = document.querySelectorAll(".tab-btn");
     const contents = document.querySelectorAll(".tab-content");
     tabButtons.forEach(btn => {
@@ -283,54 +228,65 @@
       });
     });
 
-    // Leaflet Map for Project Location
-    let selectedLat = null;
-    let selectedLng = null;
-    const projectMap = L.map('projectMap').setView([20.5937, 78.9629], 5); // Center India
+    // Leaflet map
+    const projectMap = L.map('projectMap').setView([20.5937, 78.9629], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(projectMap);
 
-    let marker;
+    let marker = null;
+    let selectedLat = null;
+    let selectedLng = null;
 
     function updateMarker(lat, lng) {
-      if (marker) {
-        marker.setLatLng([lat, lng]);
-      } else {
-        marker = L.marker([lat, lng]).addTo(projectMap);
-      }
+      if (marker) marker.setLatLng([lat, lng]);
+      else marker = L.marker([lat, lng]).addTo(projectMap);
       marker.bindPopup(`<b>Selected Location</b><br>Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`).openPopup();
       document.getElementById('selectedCoords').textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     }
 
-    // Click on map to select location
-    projectMap.on('click', function (e) {
+    // Click map to select location
+    projectMap.on('click', e => {
       selectedLat = e.latlng.lat;
       selectedLng = e.latlng.lng;
       updateMarker(selectedLat, selectedLng);
     });
 
-    // Use Current Location button
-    document.getElementById('useLocationBtn').addEventListener('click', () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            selectedLat = lat;
-            selectedLng = lng;
-            projectMap.setView([lat, lng], 15);
-            updateMarker(lat, lng);
-            alert("✅ Current location captured!");
-          },
-          () => alert("❌ Please allow location access.")
-        );
-      } else {
-        alert("❌ Geolocation is not supported by your browser.");
-      }
+    // Free autocomplete using OpenStreetMap Nominatim
+    const locationInput = document.getElementById('locationInput');
+    const suggestions = document.getElementById('suggestions');
+    let timeout = null;
+
+    locationInput.addEventListener('input', () => {
+      clearTimeout(timeout);
+      const query = locationInput.value.trim();
+      suggestions.innerHTML = '';
+      if (query.length < 3) return;
+
+      timeout = setTimeout(() => {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
+          .then(res => res.json())
+          .then(data => {
+            suggestions.innerHTML = '';
+            data.forEach(place => {
+              const div = document.createElement('div');
+              div.textContent = place.display_name;
+              div.addEventListener('click', () => {
+                locationInput.value = place.display_name;
+                selectedLat = parseFloat(place.lat);
+                selectedLng = parseFloat(place.lon);
+                projectMap.setView([selectedLat, selectedLng], 15);
+                updateMarker(selectedLat, selectedLng);
+                suggestions.innerHTML = '';
+              });
+              suggestions.appendChild(div);
+            });
+          });
+      }, 300);
     });
 
-    // Add Project Form
+    // Add project form
+    let projects = [];
     document.getElementById("projectForm").addEventListener("submit", e => {
       e.preventDefault();
       const title = document.getElementById('title').value;
@@ -342,15 +298,12 @@
         return;
       }
 
-      const location = `Lat: ${selectedLat.toFixed(5)}, Lng: ${selectedLng.toFixed(5)}`;
-
       projects.push({
         id: projects.length + 1,
         title,
         description,
         target,
         raised: 0,
-        location,
         latitude: selectedLat,
         longitude: selectedLng
       });
@@ -363,11 +316,12 @@
       document.getElementById('selectedCoords').textContent = "None";
     });
 
-    // Load Project Status
+    // Load project status
     function loadStatus() {
       const statusList = document.getElementById("status-list");
-      statusList.innerHTML = "";
+      statusList.innerHTML = '';
       let done = 0, pending = 0;
+
       projects.forEach(p => {
         const percent = Math.min((p.raised / p.target) * 100, 100).toFixed(0);
         percent >= 100 ? done++ : pending++;
@@ -379,21 +333,23 @@
             <div class="progress-bar" style="width:${percent}%">${percent}%</div>
           </div>
           <p><b>Raised:</b> ₹${p.raised} / <b>Target:</b> ₹${p.target}</p>
-          <p><b>Location:</b> ${p.location}</p>
+          <p><b>Location:</b> Lat: ${p.latitude.toFixed(5)}, Lng: ${p.longitude.toFixed(5)}</p>
           <hr>
         `;
         statusList.appendChild(div);
       });
+
       document.getElementById("done-count").textContent = done;
       document.getElementById("pending-count").textContent = pending;
     }
 
-    // Add Admin Form
+    // Add admin
     document.getElementById("adminForm").addEventListener("submit", e => {
       e.preventDefault();
       alert("👤 New admin added successfully!");
       e.target.reset();
     });
+
   </script>
 </body>
 
