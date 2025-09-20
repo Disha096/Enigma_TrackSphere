@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -86,10 +85,6 @@
       padding-bottom: 0.5rem;
     }
 
-    form {
-      margin-top: 1rem;
-    }
-
     input,
     textarea {
       width: 100%;
@@ -109,7 +104,7 @@
       border: none;
       cursor: pointer;
       font-weight: 600;
-      transition: background-color 0.3s ease;
+      transition: 0.3s;
       margin-top: 10px;
     }
 
@@ -142,10 +137,35 @@
       background-color: #f0f0f0;
       cursor: pointer;
     }
+
+    .stats-box {
+      display: flex;
+      justify-content: space-around;
+      margin: 2rem 0;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: #ecf0f1;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      flex: 1;
+      min-width: 150px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-card h3 {
+      font-size: 2rem;
+      margin: 0;
+      color: #27ae60;
+    }
   </style>
 </head>
 
 <body>
+
   <header>⚙️ Admin Dashboard</header>
 
   <nav>
@@ -174,7 +194,7 @@
         <input type="number" id="target" placeholder="Target Funding Amount (₹)" required>
 
         <label>Project Location</label>
-        <div style="position: relative;">
+        <div style="position:relative;">
           <input type="text" id="locationInput" placeholder="Enter project location (e.g., Panvel, Maharashtra)"
             autocomplete="off" required>
           <div id="suggestions"></div>
@@ -215,7 +235,7 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Tab functionality
+    // Tabs
     const tabButtons = document.querySelectorAll(".tab-btn");
     const contents = document.querySelectorAll(".tab-content");
     tabButtons.forEach(btn => {
@@ -225,18 +245,18 @@
         btn.classList.add("active");
         document.getElementById(btn.dataset.tab).classList.add("active");
         if (btn.dataset.tab === "status") loadStatus();
+        if (btn.dataset.tab === "add-project") setTimeout(() => projectMap.invalidateSize(), 100);
       });
     });
 
     // Leaflet map
     const projectMap = L.map('projectMap').setView([20.5937, 78.9629], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(projectMap);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(projectMap);
 
     let marker = null;
     let selectedLat = null;
     let selectedLng = null;
+    let projects = [];
 
     function updateMarker(lat, lng) {
       if (marker) marker.setLatLng([lat, lng]);
@@ -245,14 +265,13 @@
       document.getElementById('selectedCoords').textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
     }
 
-    // Click map to select location
     projectMap.on('click', e => {
       selectedLat = e.latlng.lat;
       selectedLng = e.latlng.lng;
       updateMarker(selectedLat, selectedLng);
     });
 
-    // Free autocomplete using OpenStreetMap Nominatim
+    // Autocomplete
     const locationInput = document.getElementById('locationInput');
     const suggestions = document.getElementById('suggestions');
     let timeout = null;
@@ -264,7 +283,9 @@
       if (query.length < 3) return;
 
       timeout = setTimeout(() => {
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`, {
+          headers: { 'Accept-Language': 'en-US', 'User-Agent': 'AdminDashboardDemo/1.0' }
+        })
           .then(res => res.json())
           .then(data => {
             suggestions.innerHTML = '';
@@ -281,64 +302,46 @@
               });
               suggestions.appendChild(div);
             });
-          });
+          })
+          .catch(err => console.error(err));
       }, 300);
     });
 
-    // Add project form
-    let projects = [];
+    // Add project
     document.getElementById("projectForm").addEventListener("submit", e => {
       e.preventDefault();
       const title = document.getElementById('title').value;
       const description = document.getElementById('description').value;
       const target = parseInt(document.getElementById('target').value);
 
-      if (!selectedLat || !selectedLng) {
-        alert("❌ Please select a location on the map!");
-        return;
-      }
+      if (!selectedLat || !selectedLng) { alert("❌ Please select a location on the map!"); return; }
 
-      projects.push({
-        id: projects.length + 1,
-        title,
-        description,
-        target,
-        raised: 0,
-        latitude: selectedLat,
-        longitude: selectedLng
-      });
-
+      projects.push({ id: projects.length + 1, title, description, target, raised: 0, latitude: selectedLat, longitude: selectedLng });
       alert("✅ Project added successfully!");
       e.target.reset();
-      selectedLat = null;
-      selectedLng = null;
+      selectedLat = null; selectedLng = null;
       if (marker) projectMap.removeLayer(marker);
       document.getElementById('selectedCoords').textContent = "None";
     });
 
-    // Load project status
+    // Project status
     function loadStatus() {
       const statusList = document.getElementById("status-list");
       statusList.innerHTML = '';
       let done = 0, pending = 0;
-
       projects.forEach(p => {
         const percent = Math.min((p.raised / p.target) * 100, 100).toFixed(0);
         percent >= 100 ? done++ : pending++;
         const div = document.createElement("div");
-        div.innerHTML = `
-          <h3>${p.title}</h3>
-          <p>${p.description}</p>
-          <div class="progress-container">
-            <div class="progress-bar" style="width:${percent}%">${percent}%</div>
-          </div>
-          <p><b>Raised:</b> ₹${p.raised} / <b>Target:</b> ₹${p.target}</p>
-          <p><b>Location:</b> Lat: ${p.latitude.toFixed(5)}, Lng: ${p.longitude.toFixed(5)}</p>
-          <hr>
-        `;
+        div.innerHTML = `<h3>${p.title}</h3>
+        <p>${p.description}</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width:${percent}%">${percent}%</div>
+        </div>
+        <p><b>Raised:</b> ₹${p.raised} / <b>Target:</b> ₹${p.target}</p>
+        <p><b>Location:</b> Lat:${p.latitude.toFixed(5)}, Lng:${p.longitude.toFixed(5)}</p><hr>`;
         statusList.appendChild(div);
       });
-
       document.getElementById("done-count").textContent = done;
       document.getElementById("pending-count").textContent = pending;
     }
@@ -349,8 +352,8 @@
       alert("👤 New admin added successfully!");
       e.target.reset();
     });
-
   </script>
+
 </body>
 
 </html>
