@@ -4,66 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="style1.css">
-    <!-- Google Sign-In API -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>Login / Signup</title>
+    <link rel="stylesheet" href="style_login.css">
 </head>
 
 <body>
     <div class="container" id="container">
-        <!-- User Google Login -->
+        <!-- Sign Up Form -->
         <div class="form-container sign-up-container">
             <form>
-                <h1>User Login</h1>
-                <p>Sign in using Google</p>
-                <!-- Google Sign-In button -->
-                <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-callback="handleGoogleLogin">
-                </div>
-                <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
-                    data-text="sign_in_with" data-shape="rect" data-logo_alignment="left">
-                </div>
+                <h1>Create Account</h1>
+                <input type="text" placeholder="Name" required />
+                <input type="email" placeholder="Email" required />
+                <input type="password" placeholder="Password" required />
+                <button>Sign Up</button>
             </form>
         </div>
 
-        <!-- Admin Login -->
+        <!-- Sign In Form -->
         <div class="form-container sign-in-container">
             <form>
-                <h1>Admin Login</h1>
-                <input type="email" placeholder="Admin Email" required />
+                <h1>Sign in</h1>
+                <input type="email" placeholder="Email" required />
                 <input type="password" placeholder="Password" required />
-                <button>Login</button>
+                <button>Sign In</button>
             </form>
         </div>
 
-        <!-- Overlay -->
+        <!-- Overlay for Sliding Effect -->
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
-                    <h1>Admin Portal</h1>
-                    <p>Only authorized admins can log in here</p>
-                    <button class="ghost" id="signIn">Admin Login</button>
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login</p>
+                    <button class="ghost" id="signIn">Sign In</button>
                 </div>
-                <div class="overlay-panel overlay-right">
-                    <h1>User Portal</h1>
-                    <p>Login quickly with your Google Account</p>
-                    <button class="ghost" id="signUp">User Login</button>
+                <div class="overlay-panel overlay-right ">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your details and start your donation journey with us</p>
+                    <button class="ghost" id="signUp">Admin here!!</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="script_login.js"></script>
-
-    <!-- Google Login callback -->
-    <script>
-        function handleGoogleLogin(response) {
-            console.log("Google Token: ", response.credential);
-            // Later: send this token to PHP backend for validation
-            alert("Google Login successful!");
-            window.location.href = "user-dashboard.html";
-        }
-    </script>
 </body>
 
 </html>

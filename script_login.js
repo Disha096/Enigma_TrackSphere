@@ -1,16 +1,11 @@
-const userLogin = document.getElementById('user-login');
-const adminLogin = document.getElementById('admin-login');
-const switchToAdmin = document.getElementById('switchToAdmin');
-const switchToUser = document.getElementById('switchToUser');
+const signUpButton = document.getElementById('signUp');
+const signInButton = document.getElementById('signIn');
+const container = document.getElementById('container');
 
-switchToAdmin.addEventListener('click', (e) => {
-    e.preventDefault();
-    userLogin.classList.add('hidden');
-    adminLogin.classList.remove('hidden');
+signUpButton.addEventListener('click', () => {
+    container.classList.add("right-panel-active");
 });
 
-switchToUser.addEventListener('click', (e) => {
-    e.preventDefault();
-    adminLogin.classList.add('hidden');
-    userLogin.classList.remove('hidden');
+signInButton.addEventListener('click', () => {
+    container.classList.remove("right-panel-active");
 });
